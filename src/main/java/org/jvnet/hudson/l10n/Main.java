@@ -10,12 +10,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Applies contributed translations (in the form of JSON files) as patches to the source tree.
+ *
  * @author Kohsuke Kawaguchi
  */
 public class Main {
+    /**
+     * Should point to the checked out copy of <tt>https://svn.dev.java.net/svn/hudson/trunk/hudson/</tt>
+     */
     @Argument
     public File sourceRoot;
 
+    /**
+     * JSON translation files to apply as patches
+     */
     @Argument(index=1)
     public List<File> jsonFiles = new ArrayList<File>();
 
