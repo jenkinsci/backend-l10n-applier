@@ -60,10 +60,13 @@ public class Patcher
 
             String key = e.getString("key");
             String text = e.getString("text");
+            // the server fixed the encoding problem, so there's no need for this
+            /*
             if (text.contains("?")) {
                 System.out.println("  Can't apply because of the encoding problem: "+text);
                 continue;
             }
+            */
 
             File l10n = new File(FilenameUtils.removeExtension(match.getPath())+"_"+locale+".properties");
             if (l10n.exists()) {
@@ -207,6 +210,15 @@ public class Patcher
             int idx = baseName.lastIndexOf("!");
             return locateInSourceTree(baseName.substring(idx+1));
         }
+
+        // JBoss produces URLs like this
+        // vfszip:/home/kohsuke/Jboss/jbossAS5/jboss-5.1.0.GA/server/default/deploy/hudson.war/WEB-INF/lib/hudson-core-1.339.jar/lib/layout/layout
+        if (baseName.startsWith("vfszip:")) {
+            int idx = baseName.indexOf(".jar/");
+            if (idx>0)
+                return locateInSourceTree(baseName.substring(idx+4));
+        }
+
         return null;
     }
 
