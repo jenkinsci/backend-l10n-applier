@@ -1,5 +1,6 @@
 package org.jvnet.hudson.l10n;
 
+import net.sf.json.JSONException;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -37,6 +38,8 @@ public class Main {
         for (File j : m.jsonFiles) {
             try {
                 patcher.patch(j);
+            } catch (JSONException e) {
+                e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
