@@ -213,7 +213,7 @@ public class Patcher
 
         // JBoss produces URLs like this
         // vfszip:/home/kohsuke/Jboss/jbossAS5/jboss-5.1.0.GA/server/default/deploy/hudson.war/WEB-INF/lib/hudson-core-1.339.jar/lib/layout/layout
-        if (baseName.startsWith("vfszip:")) {
+        if (baseName.startsWith("vfszip:") || baseName.startsWith("vfs:")) {
             int idx = baseName.indexOf(".jar/");
             if (idx>0)
                 return locateInSourceTree(baseName.substring(idx+4));
