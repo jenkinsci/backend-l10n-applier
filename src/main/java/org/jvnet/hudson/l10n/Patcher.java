@@ -16,6 +16,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +26,8 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static java.util.Arrays.asList;
 
 /**
  * Patches the message resources.
@@ -212,9 +215,11 @@ public class Patcher
 
     private File _findMatch(String baseName) {
         if (baseName.startsWith("file:")) {
-            int idx = baseName.lastIndexOf("WEB-INF/classes");
-            if(idx>=0)
-                return locateInSourceTree(baseName.substring(idx+"WEB-INF/classes".length()));
+            for (String suffix : asList("WEB-INF/classes","WEB-INF/classes.jar!")) {
+                int idx = baseName.lastIndexOf(suffix);
+                if(idx>=0)
+                    return locateInSourceTree(baseName.substring(idx+suffix.length()));
+            }
 
             // glassfish uses URLs like file:/.../glassfish/domains/domain1/generated/jsp/j2ee-modules/hudson/loader/lib/hudson/buildHealth
             // or                       file:/.../glassfish/domains/domain1/generated/jsp/hudson/loader/hudson/model/View/builds
