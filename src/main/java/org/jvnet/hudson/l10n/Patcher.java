@@ -218,7 +218,8 @@ public class Patcher
 
             // glassfish uses URLs like file:/.../glassfish/domains/domain1/generated/jsp/j2ee-modules/hudson/loader/lib/hudson/buildHealth
             // or                       file:/.../glassfish/domains/domain1/generated/jsp/hudson/loader/hudson/model/View/builds
-            Matcher m = Pattern.compile("generated/jsp/(.+)/loader/").matcher(baseName);
+            //                          file:/.../glassfish/domains/domain1/generated/jsp/jenkins/loader_1182831483/lib/layout/layout
+            Matcher m = Pattern.compile("generated/jsp/(.+)/loader(_[0-9]+)?/").matcher(baseName);
             if (m.find())
                 return locateInSourceTree(baseName.substring(m.end()));
         }
