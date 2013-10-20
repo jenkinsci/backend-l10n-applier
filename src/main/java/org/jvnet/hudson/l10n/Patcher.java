@@ -241,6 +241,13 @@ public class Patcher
                 return locateInSourceTree(baseName.substring(idx+4));
         }
 
+        // more desperate checks for things like jar:file:/var/lib/jenkins/plugins/maven-plugin/WEB-INF/lib/maven-plugin.jar!/hudson/maven/MavenModuleSet/global
+        for (String suffix : asList(".jar!")) {
+            int idx = baseName.lastIndexOf(suffix);
+            if(idx>=0)
+                return locateInSourceTree(baseName.substring(idx+suffix.length()));
+        }
+
         return null;
     }
 
