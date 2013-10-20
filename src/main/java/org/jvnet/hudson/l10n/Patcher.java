@@ -75,10 +75,13 @@ public class Patcher
                 // create a brand new file
                 FileOutputStream s = new FileOutputStream(l10n);
                 PrintWriter w = new PrintWriter(new OutputStreamWriter(s,"iso-8859-1"));
-                IOUtils.copy(getClass().getResourceAsStream("header.txt"),s);
-                w.println();
-                writeEntry(key, text, w);
-                w.close();
+                try {
+                    IOUtils.copy(getClass().getResourceAsStream("header.txt"),s);
+                    w.println();
+                    writeEntry(key, text, w);
+                } finally {
+                    w.close();
+                }
             }
             System.out.println("  "+l10n);
         }
@@ -100,32 +103,35 @@ public class Patcher
         // property files are ISO-8859-1
         BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(l10n),"iso-8859-1"));
         PrintWriter out = new PrintWriter(new OutputStreamWriter(new FileOutputStream(tmp),"iso-8859-1"));
-        String line;
-        while ((line=in.readLine())!=null) {
-            // look for the insertion key and insert it there
-            int eq = line.indexOf('=');
-            if (eq>0) {
-                String k = line.substring(0, eq).trim();
-                if (k.equals(escapeKey(insertionPosition)))
-                    writeEntry(key, text, out);
+        try {
+            String line;
+            while ((line=in.readLine())!=null) {
+                // look for the insertion key and insert it there
+                int eq = line.indexOf('=');
+                if (eq>0) {
+                    String k = line.substring(0, eq).trim();
+                    if (k.equals(escapeKey(insertionPosition)))
+                        writeEntry(key, text, out);
 
-                if (k.equals(escapeKey(key))) {
-                    // remove existing value
-                    while (line.endsWith("\\")) {
-                        line = in.readLine();
+                    if (k.equals(escapeKey(key))) {
+                        // remove existing value
+                        while (line!=null && line.endsWith("\\")) {
+                            line = in.readLine();
+                        }
+                        continue;
                     }
-                    continue;
                 }
+                out.println(line);
             }
-            out.println(line);
+
+            if (insertionPosition==null) // insert it at the end
+                writeEntry(key, text, out);
+        } finally {
+            in.close();
+            out.close();
         }
 
-        if (insertionPosition==null) // insert it at the end
-            writeEntry(key, text, out);
-
         // override the properties file.
-        in.close();
-        out.close();
         tmp.renameTo(l10n);
     }
 
