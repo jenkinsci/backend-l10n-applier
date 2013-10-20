@@ -75,6 +75,9 @@ public class Patcher
             if (l10n.exists()) {
                 insert(key, text, l10n);
             } else {
+                if (key.equals(text))
+                    continue;   // no need to list this entry explicitly.
+
                 // create a brand new file
                 FileOutputStream s = new FileOutputStream(l10n);
                 PrintWriter w = new PrintWriter(new OutputStreamWriter(s,"iso-8859-1"));
@@ -126,8 +129,9 @@ public class Patcher
                 out.println(line);
             }
 
-            if (insertionPosition==null) // insert it at the end
+            if (insertionPosition==null) {// insert it at the end
                 writeEntry(key, text, out);
+            }
         } finally {
             in.close();
             out.close();
@@ -152,6 +156,8 @@ public class Patcher
      * Write a property file entry.
      */
     private void writeEntry(String key, String text, PrintWriter out) {
+        if (key.equals(text))
+            return; // there's no need to list such an entry explicitly.
         out.println(escapeKey(key)+"="+escape(text));
     }
 
