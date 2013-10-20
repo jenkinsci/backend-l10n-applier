@@ -95,8 +95,7 @@ public class Patcher
         File tmp = new File(l10n.getPath()+".tmp");
 
         // figure out where we insert the new text
-        Properties props = new Properties();
-        props.load(new FileInputStream(l10n));
+        Properties props = load(l10n);
         TreeSet<String> existingKeys = new TreeSet<String>((Set)props.keySet());
         String insertionPosition = existingKeys.ceiling(key);
 
@@ -133,6 +132,17 @@ public class Patcher
 
         // override the properties file.
         tmp.renameTo(l10n);
+    }
+
+    private Properties load(File l10n) throws IOException {
+        FileInputStream in = new FileInputStream(l10n);
+        try {
+            Properties props = new Properties();
+            props.load(in);
+            return props;
+        } finally {
+            in.close();
+        }
     }
 
     /**
