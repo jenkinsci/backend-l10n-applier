@@ -115,9 +115,15 @@ public class Patcher
      * Number of arguments must match.
      */
     private boolean argumentsMatch(String text, String original) {
-        if (original.length()>0)
-            return countArgs(text)==countArgs(original);
-        return true;    // can't really tell unless there's an existing text
+        try {
+            if (original.length()>0)
+                return countArgs(text)==countArgs(original);
+            return true;    // can't really tell unless there's an existing text
+        } catch (IllegalArgumentException e) {
+            // this happens when the message fails to parse with MessageFormat
+            // usually someone foget to escape '
+            return false;
+        }
     }
 
     private int countArgs(String text) {
