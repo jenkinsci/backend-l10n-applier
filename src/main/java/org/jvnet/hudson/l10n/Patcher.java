@@ -109,6 +109,9 @@ public class Patcher
         if (text.contains("<script") || text.contains("<iframe") || text.contains("<style") || text.contains("<img"))   // induces formatting changes. can't be right.
             return true;
 
+        if (text.contains("javascript:"))
+            return true;
+
         return false;
     }
 
