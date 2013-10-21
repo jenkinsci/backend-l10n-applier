@@ -45,13 +45,22 @@ public class Patcher
      */
     private Map<String,File> baseNameCache = new HashMap<String, File>();
 
-    public Patcher(Collection<File> sourceRoots) {
+    private final Blacklist blacklist;
+
+    public Patcher(Collection<File> sourceRoots) throws IOException {
         this.sourceRoots = sourceRoots;
+        blacklist = new Blacklist();
     }
 
     public void patch(File json) throws IOException {
         System.out.println("Patching from "+json);
         JSONObject o = JSONObject.fromObject(FileUtils.readFileToString(json, "UTF-8"));
+
+        String installation = o.getString("installation");
+        if (blacklist.contains(installation)) {
+            System.out.println("  "+installation+" blacklisted");
+            return;
+        }
 
         String locale = o.getString("locale");
 
