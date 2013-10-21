@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -76,6 +77,12 @@ public class Patcher
 
             String key = e.getString("key");
             String text = e.getString("text");
+            String original = e.getString("original");
+
+            if (!argumentsMatch(text,original)) {
+                System.out.println("  Number of arguments not matching: "+text+" vs "+original);
+                continue;
+            }
 
             if (blacklistText(text)) {
                 System.out.println("  Not applying text:"+text);
@@ -102,6 +109,19 @@ public class Patcher
             }
             System.out.println("  "+l10n);
         }
+    }
+
+    /**
+     * Number of arguments must match.
+     */
+    private boolean argumentsMatch(String text, String original) {
+        if (original.length()>0)
+            return countArgs(text)==countArgs(original);
+        return true;    // can't really tell unless there's an existing text
+    }
+
+    private int countArgs(String text) {
+        return new MessageFormat(text).getFormatsByArgumentIndex().length;
     }
 
     private boolean blacklistText(String text) {
