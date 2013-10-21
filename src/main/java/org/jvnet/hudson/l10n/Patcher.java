@@ -14,12 +14,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -27,7 +26,7 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static java.util.Arrays.asList;
+import static java.util.Arrays.*;
 
 /**
  * Patches the message resources.
@@ -77,13 +76,11 @@ public class Patcher
 
             String key = e.getString("key");
             String text = e.getString("text");
-            // the server fixed the encoding problem, so there's no need for this
-            /*
-            if (text.contains("?")) {
-                System.out.println("  Can't apply because of the encoding problem: "+text);
+
+            if (blacklistText(text)) {
+                System.out.println("  Not applying text:"+text);
                 continue;
             }
-            */
 
             File l10n = new File(FilenameUtils.removeExtension(match.getPath())+"_"+locale+".properties");
             if (l10n.exists()) {
@@ -105,6 +102,14 @@ public class Patcher
             }
             System.out.println("  "+l10n);
         }
+    }
+
+    private boolean blacklistText(String text) {
+        text = text.toLowerCase(Locale.ENGLISH);
+        if (text.contains("<script") || text.contains("<iframe") || text.contains("<style") || text.contains("<img"))   // induces formatting changes. can't be right.
+            return true;
+
+        return false;
     }
 
     /**
