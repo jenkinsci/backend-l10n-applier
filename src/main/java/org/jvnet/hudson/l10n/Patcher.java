@@ -47,9 +47,12 @@ public class Patcher
 
     private final Blacklist blacklist;
 
+    private final TextList addOnlyLanguages;
+
     public Patcher(Collection<File> sourceRoots) throws IOException {
         this.sourceRoots = sourceRoots;
         blacklist = new Blacklist();
+        addOnlyLanguages = new TextList(getClass().getResourceAsStream("add-only-languages.txt"));
     }
 
     public void patch(File json) throws IOException {
@@ -63,6 +66,8 @@ public class Patcher
         }
 
         String locale = o.getString("locale");
+
+        boolean noEdit = addOnlyLanguages.contains(locale);
 
         for (JSONObject e : (List<JSONObject>)(List)o.getJSONArray("entry")) {
             String baseName = e.getString("baseName");
@@ -82,7 +87,7 @@ public class Patcher
 
             File l10n = new File(FilenameUtils.removeExtension(match.getPath())+"_"+locale+".properties");
             if (l10n.exists()) {
-                insert(key, text, l10n);
+                insert(key, text, l10n, noEdit);
             } else {
                 if (key.equals(text))
                     continue;   // no need to list this entry explicitly.
@@ -105,14 +110,21 @@ public class Patcher
     /**
      * We try to stitch the text into the existing text.
      * If there's no existing text, we insert it to the nearest match.
+     *
+     * @param noEdit
+     *      If this is true, the text cannot replace an existing translation. Only new addtion
+     *      where there is no current text is allowed.
      */
-    private void insert(String key, String text, File l10n) throws IOException {
+    private void insert(String key, String text, File l10n, boolean noEdit) throws IOException {
         File tmp = new File(l10n.getPath()+".tmp");
 
         // figure out where we insert the new text
         Properties props = load(l10n);
         TreeSet<String> existingKeys = new TreeSet<String>((Set)props.keySet());
         String insertionPosition = existingKeys.ceiling(key);
+
+        if (key.equals(insertionPosition) && noEdit)
+            return; // existing text found. not taking the new edit.
 
         // property files are ISO-8859-1
         BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(l10n),"iso-8859-1"));

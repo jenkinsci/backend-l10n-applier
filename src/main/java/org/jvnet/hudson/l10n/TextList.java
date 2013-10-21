@@ -2,7 +2,8 @@ package org.jvnet.hudson.l10n;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.Reader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,8 +13,8 @@ import java.util.Set;
 public class TextList {
     private final Set<String> set = new HashSet<String>();
 
-    public TextList(Reader reader) throws IOException {
-        BufferedReader r = new BufferedReader(reader);
+    public TextList(InputStream is) throws IOException {
+        BufferedReader r = new BufferedReader(new InputStreamReader(is));
         try {
             String l;
             while ((l=r.readLine())!=null) {

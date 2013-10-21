@@ -1,0 +1,7 @@
+# this file lists languages that only accepts additions and not edits to existing text.
+#
+# languages whose translations are actively maintained can put themselves here to prevent
+# unwanted edits.
+#
+# see https://groups.google.com/forum/#!topic/jenkinsci-dev/1fOaSLcy5aQ for context
+de
